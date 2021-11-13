@@ -6,7 +6,7 @@ on:
       runs-on:
         description: The OS to run on
         type: string
-        default: ubunutu-latest
+        default: ubuntu-latest
         required: false
       dotnet-version:
         description: The dotnet version specifier

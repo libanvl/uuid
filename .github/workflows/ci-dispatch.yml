@@ -5,13 +5,14 @@ on:
     inputs:
       runs-on:
         description: The OS to run on
-        default: ubunutu-latest
+        default: ubuntu-latest
         required: false
       dotnet-version:
         description: The dotnet version specifier
         default: 6.0.x
         required: false
       dotnet-include-prerelease:
+        type: boolean
         description: Whether to include dotnet prerelease version
         default: 'true'
         required: false
@@ -31,10 +32,10 @@ on:
 jobs:
   call-ci:
     uses: libanvl/uuid/.github/workflows/ci-call.yml@main
-    #with:
-    #  runs-on: ${{ github.event.inputs.runs-on }}
-    #  dotnet-version: $ {{ github.event.inputs.dotnet-version }}
-    #  dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }} == 'true'
-    #  configuration:  ${{ github.events.inputs.configuration }}
-    #  public-release: ${{ github.events.inputs.public-release }} == 'true'
-    #  package: ${{ github.events.inputs.package }} == 'true'
+    with:
+      runs-on: ${{ github.event.inputs.runs-on }}
+      dotnet-version: $ {{ github.event.inputs.dotnet-version }}
+      dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }}
+      configuration:  ${{ github.events.inputs.configuration }}
+      public-release: ${{ github.events.inputs.public-release }} == 'true'
+      package: ${{ github.events.inputs.package }} == 'true'
