@@ -69,12 +69,16 @@ jobs:
         run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
       - name: Test
         run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }}
+
       - name: Pack
         if: ${{ inputs.package }}
         run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg -p:PublicRelease=${{ inputs.public-release }}
+      - name: Write Nuget Version
+        if: ${{ inputs.package }}
+        run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt
       - name: Upload Artifact
         if: ${{ inputs.package }}
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./nupkg/*.nupkg
+          path: ./nupkg/*
