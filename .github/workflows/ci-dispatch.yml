@@ -34,7 +34,7 @@ on:
 
 jobs:
   call-ci:
-    uses: libanvl/uiid/.github/workflows/ci-call.yml@main
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
       dotnet-version: $ {{ github.event.inputs.dotnet-version }}
