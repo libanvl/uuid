@@ -33,38 +33,6 @@ on:
         type: boolean
         default: false
         required: false
-  workflow_dispatch:
-    inputs:
-      runs-on:
-        description: The OS to run on
-        type: string
-        default: ubunutu-latest
-        required: false
-      dotnet-version:
-        description: The dotnet version specifier
-        type: string
-        default: 6.0.x
-        required: false
-      dotnet-include-prerelease:
-        description: Whether to include dotnet prerelease version
-        type: boolean
-        default: "true"
-        required: false
-      configuration:
-        description: The configuration to build
-        type: string
-        default: Release
-        required: false
-      public-release:
-        description: Whether to build and version as a public release
-        type: boolean
-        default: ""
-        required: false
-      package:
-        description: Whether to pack and upload as an artifact
-        type: boolean
-        default: ""
-        required: false
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
