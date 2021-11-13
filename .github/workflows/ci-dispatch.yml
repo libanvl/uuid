@@ -1,4 +1,4 @@
-name: .NET CI Dispatch
+name: .NET CI Manual
 
 on:
   workflow_dispatch:

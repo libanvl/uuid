@@ -1,63 +1,47 @@
 name: .NET 6
 
-#on:
-#  push:
-#    tags-ignore:
-#      - v*
-#    branches: [main, release/v*]
-#  pull_request:
-#    branches: [main, release/v*]
+on:
+  push:
+    tags-ignore:
+      - v*
+    branches: [main, release/v*]
+  pull_request:
+    branches: [main, release/v*]
+  workflow_dispatch:
+
+concurrency:
+  group: dotnet-${{ github.ref }}-${{ github.event }}
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-# GitHub Packages Feed settings
   GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
   GITHUB_USER: libanvl
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# Official NuGet Feed settings
-  NUGET_FEED: https://api.nuget.org/v3/index.json
-  NUGET_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-          include-prerelease: true
-      - name: Nerdbank.GitVersioning
-        uses: dotnet/nbgv@v0.4.0
-        with:
-          setCommonVars: true
-        id: nbgv
-      - name: Restore
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
-      - name: Pack
-        if: matrix.os == 'ubuntu-latest'
-        run: dotnet pack --configuration Release --no-restore --include-symbols --include-source --output nupkg  -p:SymbolPackageFormat=snupkg
-      - name: Upload Artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v2
-        with:
-          name: nupkg
-          path: ./nupkg/*.*nupkg
-  
-  prerelease:
-    needs: build
-    if: github.ref == 'refs/heads/main'
+  build-ubuntu:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+      package: true
+  build-windows:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+  build-macos:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+
+  private-release:
+    needs: build-ubuntu
+    if: github.ref == 'refs/heads/main' && github.event == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
@@ -65,4 +49,4 @@ jobs:
         with:
           name: nupkg
       - name: Push to GitHub Feed
-        run: dotnet nuget push ./nupkg/*.*nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
+        run: dotnet nuget push ./nupkg/*.nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
