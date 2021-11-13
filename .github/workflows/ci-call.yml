@@ -18,6 +18,11 @@ on:
         type: boolean
         default: true
         required: false
+      dotnet-verbosity:
+        description: The log verbosity of dotnet commands
+        type: string
+        default: minimal
+        required: false
       configuration:
         description: The configuration to build
         type: string
@@ -61,12 +66,12 @@ jobs:
       - name: Restore
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity normal -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.verbosity }} -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
       - name: Test
-        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity normal
+        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.verbosity }}
       - name: Pack
         if: ${{ inputs.package }}
-        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity normal --output nupkg -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.verbosity }} --output nupkg -p:PublicRelease=${{ inputs.public-release }}
       - name: Upload Artifact
         if: ${{ inputs.package }}
         uses: actions/upload-artifact@v2
