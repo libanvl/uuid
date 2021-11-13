@@ -30,7 +30,14 @@ on:
         default: 'false'
 
 jobs:
+  print-context:
+    runs-on: ubuntu-latest
+    steps:
+    - env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
   call-ci:
+    needs: print-context
     uses: libanvl/uuid/.github/workflows/ci-call.yml@main
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
