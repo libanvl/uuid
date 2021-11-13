@@ -28,11 +28,6 @@ on:
         type: string
         default: Release
         required: false
-      public-release:
-        description: Whether to build and version as a public release
-        type: boolean
-        default: false
-        required: false
       package:
         description: Whether to pack and upload as an artifact
         type: boolean
@@ -66,13 +61,15 @@ jobs:
       - name: Restore
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true
       - name: Test
         run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }}
-
+      - name: Print Public Release
+        if: ${{ inputs.package }}
+        run: echo ${{ steps.nbgv.outputs.PublicRelease }}
       - name: Pack
         if: ${{ inputs.package }}
-        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg
       - name: Write Nuget Version
         if: ${{ inputs.package }}
         run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt

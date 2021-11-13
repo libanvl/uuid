@@ -25,11 +25,6 @@ on:
         description: The configuration to build
         default: Release
         required: false
-      public-release:
-        description: Build and version as a public release
-        type: boolean
-        required: false
-        default: 'false'
       package:
         description: Pack and upload as an artifact
         type: boolean
@@ -57,5 +52,4 @@ jobs:
       dotnet-include-prerelease: ${{ github.event.inputs.dotnet-include-prerelease == 'true' }}
       dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity }}
       configuration:  ${{ github.event.inputs.configuration }}
-      public-release: ${{ github.event.inputs.public-release == 'true' }}
       package: ${{ github.event.inputs.package == 'true' }}
