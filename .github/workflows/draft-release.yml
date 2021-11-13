@@ -1,0 +1,71 @@
+name: Draft Public Release
+
+#on:
+#  push:
+#    branches: [release/v*]
+#  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+# GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
+  GITHUB_USER: libanvl
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
+      tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+          include-prerelease: true
+      - name: Nerdbank.GitVersioning
+        uses: dotnet/nbgv@v0.4.0
+        with:
+          setCommonVars: true
+        id: nbgv
+      - name: Restore
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore --verbosity normal -p:ContinuousIntegrationBuild=true -p:PublicRelease=true
+      - name: Test
+        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
+      - name: Pack
+        run: dotnet pack --configuration Release --no-restore --no-build --output nupkg -p:PublicRelease=true
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: ./nupkg/*.nupkg
+
+  draft_release:
+    needs: build
+    if: startsWith(github.ref, 'refs/heads/release/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkg
+      - name: Draft Release
+        uses: softprops/action-gh-release@v0.1.13
+        with:
+          files: ./nupkg/*.nupkg
+          draft: true
+          prerelease: true
+          target_commitish: ${{ env.GITHUB_REF }}
+          tag_name: ${{ needs.build.outputs.tag-name }}
+          fail_on_unmatched_files: true
+          discussion_category_name: Releases
