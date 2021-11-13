@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: dotnet-${{ github.ref }}-${{ github.event }}
+  group: dotnet-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -41,7 +42,7 @@ jobs:
 
   private-release:
     needs: build-ubuntu
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact

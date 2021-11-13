@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Authors>libanvl.dev</Authors>
+    <Authors>libanvl</Authors>
     <Product>libanvl.dotnet</Product>
     <Description>Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.</Description>
     <Copyright>The authors and contributors of the libanvl.uuid project.</Copyright>
