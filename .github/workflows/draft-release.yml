@@ -22,7 +22,9 @@ jobs:
         with:
           name: nupkg
       - name: Set Tag Version
-        run: TAG_VERSION=$(cat ./nupkg/version.txt)
+        run: |
+          export TAG_VERSION=$(cat ./nupkg/version.txt)
+          echo "::set-env name=TAG_VERSION::$TAG_VERSION"
       - name: Draft Release
         uses: softprops/action-gh-release@v0.1.13
         with:
