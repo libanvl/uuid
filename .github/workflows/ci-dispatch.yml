@@ -5,32 +5,28 @@ on:
     inputs:
       runs-on:
         description: The OS to run on
-        type: string
         default: ubunutu-latest
         required: false
       dotnet-version:
         description: The dotnet version specifier
-        type: string
         default: 6.0.x
         required: false
       dotnet-include-prerelease:
         description: Whether to include dotnet prerelease version
-        type: boolean
-        default: "true"
+        default: 'true'
         required: false
       configuration:
         description: The configuration to build
-        type: string
         default: Release
         required: false
       public-release:
         description: Whether to build and version as a public release
-        type: boolean
-        required: true
+        required: false
+        default: 'false'
       package:
         description: Whether to pack and upload as an artifact
-        type: boolean
-        required: true
+        required: false
+        default: 'false'
 
 jobs:
   call-ci:
@@ -38,7 +34,7 @@ jobs:
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
       dotnet-version: $ {{ github.event.inputs.dotnet-version }}
-      dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }}
+      dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }} == 'true'
       configuration:  ${{ github.events.inputs.configuration }}
-      public-release: ${{ github.events.inputs.public-release }}
-      package: ${{ github.events.inputs.package }}
+      public-release: ${{ github.events.inputs.public-release }} == 'true'
+      package: ${{ github.events.inputs.package }} == 'true'
