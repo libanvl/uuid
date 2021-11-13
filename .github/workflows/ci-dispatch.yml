@@ -35,7 +35,7 @@ jobs:
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
       #dotnet-version: $ {{ github.event.inputs.dotnet-version }}
-      #dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }}
+      dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease }}
       #configuration:  ${{ github.events.inputs.configuration }}
       #public-release: ${{ github.events.inputs.public-release }} == 'true'
       #package: ${{ github.events.inputs.package }} == 'true'

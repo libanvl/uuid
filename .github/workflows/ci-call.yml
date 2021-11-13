@@ -66,12 +66,12 @@ jobs:
       - name: Restore
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.verbosity }} -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true -p:PublicRelease=${{ inputs.public-release }}
       - name: Test
-        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.verbosity }}
+        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }}
       - name: Pack
         if: ${{ inputs.package }}
-        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.verbosity }} --output nupkg -p:PublicRelease=${{ inputs.public-release }}
+        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg -p:PublicRelease=${{ inputs.public-release }}
       - name: Upload Artifact
         if: ${{ inputs.package }}
         uses: actions/upload-artifact@v2
