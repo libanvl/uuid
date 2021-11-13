@@ -301,6 +301,11 @@ public readonly struct UUID : IEquatable<UUID>
     public bool IsLittleEndian { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the stored data has platform byte order.
+    /// </summary>
+    public bool IsPlatformEndian => IsLittleEndian == BitConverter.IsLittleEndian;
+
+    /// <summary>
     /// Creates a new <see cref="UUID"/> with the byte order swapped.
     /// </summary>
     public UUID EndianSwap() => new(this, endianSwap: true);
