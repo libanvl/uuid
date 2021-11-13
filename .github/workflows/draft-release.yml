@@ -21,13 +21,13 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: nupkg
+      - name: Set Tag Version
+        run: TAG_VERSION=$(cat ./nupkg/version.txt)
       - name: Draft Release
         uses: softprops/action-gh-release@v0.1.13
         with:
           files: ./nupkg/*.nupkg
           draft: true
-          prerelease: true
           target_commitish: ${{ env.GITHUB_REF }}
-          tag_name: ${{ needs.build.outputs.tag-name }}
+          tag_name: v${{ env.TAG_VERSION }}
           fail_on_unmatched_files: true
-          discussion_category_name: Releases
