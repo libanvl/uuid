@@ -1,73 +1,62 @@
-# libanvl.dotnet
-Some dotnet utilities
-
-[![.NET 6](https://github.com/libanvl/libanvl.dotnet/actions/workflows/dotnet.yml/badge.svg)](https://github.com/libanvl/libanvl.dotnet/actions/workflows/dotnet.yml)
-[![CodeQL](https://github.com/libanvl/libanvl.dotnet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/libanvl/libanvl.dotnet/actions/workflows/codeql-analysis.yml)
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.opt?label=libanvl.opt)](https://www.nuget.org/packages/libanvl.opt/)
+[![.NET 6](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.uuid?label=libanvl.uuid)](https://www.nuget.org/packages/libanvl.uuid/)
 
-## libanvl.Opt
+# libanvl.UUID
 
-A null-free optional value library for #nullabe enable contexts
+Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.
 
-```csharp
-class Car
-{
-	public string Driver { get; set;}
-}
+## Requirements
 
-public void AcceptOptionalValue(Opt<Car> optCar, Opt<string> optName)
-{
-	if (optCar is Opt<Car>.Some someCar)
-	{
-		someCar.Value.Driver = optName.SomeOrDefault("Default Driver");
-	}
+[.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0)
 
-	if (optCar.IsNone)
-	{
-		throw new Exception();
-	}
+## Releases
 
-	// or use Unwrap() to throw for None
+* NuGet packages are available on [NuGet.org](https://www.nuget.org/packages/libanvl.uuid)
+  * Embedded debug symbols
+  * Source Link enabled
+* NuGet packages from CI builds are available on the [libanvl GitHub feed](https://github.com/libanvl/uuid/packages/)
 
-	Car bcar = optCar.Unwrap();
-}
+## Features
 
-public void RunCarOperations()
-{
-	var acar = new Car();
-	AcceptOptionalValue(acar, "Rick");
+- [X] Immutable
+- [X] Endian-aware
+- [X] Generates Version V (5) Namespaced UUIDs
+- [X] Generates Version IV (4) "Random" UUIDs
+- [X] Implicit conversion to and from System.Guid
+  - [X] Conversion to System.Guid always follows platform endianess
+- [X] Implicit conversion from byte[] and ReadOnlyMemory&lt;byte&gt;
+- [X] Copy to new byte[]
+- [X] Property access to all five UUID records
+- [X] No signed ints in the API
+- [X] Enumerable as a sequence of bytes 
+- [X] More constructors than you can shake a stick at
 
-	Car? nocar = null;
-	AcceptOptionalValue(nocar.WrapOpt(), None.String)
-
-	// use Select to project to an Opt of an inner property
-	Opt<string> driver = acar.Select(x => x.Driver);
-}
-
-public void OptsOfEnumerablesAreIterable<T>(Opt<List<T>> optList)
-{
-	// if optList is None, the enumerable is empty, not null
-	foreach (T item in optList)
-	{
-		Console.WriteLine(item);
-	}
-
-	// this is equivalent
-	foreach (T item in optList.SomeOrEmpty())
-	{
-		Console.WriteLine(item);
-	}
-}
-```
-
-## libanvl.UUID
+## Examples
 
 ```csharp
 
 public Guid GetWindowsTerminalNamespacedProfileGuid(string profileName)
 {
-    Guid TerminalNamespace = new("2BDE4A90-D05F-401C-9492-E40884EAD1D8");
-	return UUID.V(TerminalNamespace, profileName);
+    Guid terminalNamespace = new("2BDE4A90-D05F-401C-9492-E40884EAD1D8");
+    return UUID.V(terminalNamespace, profileName);
+}
+
+public Guid GetWindowsTerminalNamespacedFragmentProfileGuid(string fragmentName, string profileName)
+{
+    Guid fragmentNamespace = new("f65ddb7e-706b-4499-8a50-40313caf510a");
+    // Guid can be implicitly converted to UUID with endianess that matches the platform
+    UUID fragmentUUID = UUID.V(fragmentNamespace, fragmentName);
+    return UUID.V(fragmentUUID, profileName);
+}
+
+public UUID GetBigEndianUUID(UUID value)
+{
+    if (value.IsLittleEndian)
+    {
+        value = value.EndianSwap()
+    }
+
+    return value;
 }
 ```
