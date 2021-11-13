@@ -41,7 +41,7 @@ jobs:
 
   private-release:
     needs: build-ubuntu
-    if: github.ref == 'refs/heads/main' && github.event == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
