@@ -1,0 +1,81 @@
+name: .NET CI
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: The OS to run on
+        type: string
+        default: ubuntu-latest
+        required: false
+      dotnet-version:
+        description: The dotnet version specifier
+        type: string
+        default: 6.0.x
+        required: false
+      dotnet-include-prerelease:
+        description: Whether to include dotnet prerelease version
+        type: boolean
+        default: true
+        required: false
+      dotnet-verbosity:
+        description: The log verbosity of dotnet commands
+        type: string
+        default: minimal
+        required: false
+      configuration:
+        description: The configuration to build
+        type: string
+        default: Release
+        required: false
+      package:
+        description: Whether to pack and upload as an artifact
+        type: boolean
+        default: false
+        required: false
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runs-on }}
+    outputs:
+      prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
+      tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+          include-prerelease: ${{ inputs.dotnet-include-prerelease }}
+      - name: Nerdbank.GitVersioning
+        uses: dotnet/nbgv@v0.4.0
+        with:
+          setCommonVars: true
+        id: nbgv
+      - name: Restore
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true
+      - name: Test
+        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }}
+      - name: Print Public Release
+        if: ${{ inputs.package }}
+        run: echo ${{ steps.nbgv.outputs.PublicRelease }}
+      - name: Pack
+        if: ${{ inputs.package }}
+        run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg
+      - name: Write Nuget Version
+        if: ${{ inputs.package }}
+        run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt
+      - name: Upload Artifact
+        if: ${{ inputs.package }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: ./nupkg/*

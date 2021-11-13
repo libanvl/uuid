@@ -1,0 +1,55 @@
+name: .NET CI Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        description: The OS to run on
+        default: ubuntu-latest
+        required: false
+      dotnet-version:
+        description: The dotnet version specifier
+        default: 6.0.x
+        required: false
+      dotnet-include-prerelease:
+        type: boolean
+        description: Include dotnet prerelease versions
+        default: 'true'
+        required: false
+      dotnet-verbosity:
+        type: string
+        description: Verbosity of dotnet commands
+        required: false
+        default: minimal
+      configuration:
+        description: The configuration to build
+        default: Release
+        required: false
+      package:
+        description: Pack and upload as an artifact
+        type: boolean
+        required: false
+        default: 'false'
+      workflow-print-context:
+        description: Print the github context as a step
+        type: boolean
+        required: false
+        default: 'false'
+
+jobs:
+  print-context:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.workflow-print-context == 'true'
+    steps:
+    - env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+  call-ci:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ${{ github.event.inputs.runs-on }}
+      dotnet-version: ${{ github.event.inputs.dotnet-version }}
+      dotnet-include-prerelease: ${{ github.event.inputs.dotnet-include-prerelease == 'true' }}
+      dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity }}
+      configuration:  ${{ github.event.inputs.configuration }}
+      package: ${{ github.event.inputs.package == 'true' }}

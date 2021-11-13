@@ -1,0 +1,73 @@
+name: .NET 6
+
+on:
+  push:
+    tags-ignore:
+      - v*
+    branches: [main, release/v*]
+  pull_request:
+    branches: [main, release/v*]
+  workflow_dispatch:
+
+concurrency:
+  group: dotnet-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
+  GITHUB_USER: libanvl
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build-ubuntu:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+      package: true
+  build-windows:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+  build-macos:
+    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    with:
+      runs-on: ubuntu-latest
+      dotnet-version: 6.0.x
+      dotnet-include-prerelease: true
+
+  private-release:
+    needs: build-ubuntu
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkg
+      - name: Push to GitHub Feed
+        run: dotnet nuget push ./nupkg/*.nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
+
+  draft-public-release:
+    needs: build-ubuntu
+    if: startsWith(github.ref, 'refs/heads/release/v') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkg
+      - name: Set Tag Version
+        run: echo "TAG_VERSION=$(cat ./nupkg/version.txt)" >> $GITHUB_ENV
+      - name: Draft Release
+        uses: softprops/action-gh-release@v0.1.13
+        with:
+          files: ./nupkg/*.nupkg
+          draft: true
+          target_commitish: ${{ env.GITHUB_REF }}
+          tag_name: v${{ env.TAG_VERSION }}
+          fail_on_unmatched_files: true

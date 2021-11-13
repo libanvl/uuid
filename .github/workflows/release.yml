@@ -1,0 +1,35 @@
+name: NuGet Release
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+# GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
+  GITHUB_USER: libanvl
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: dotnet.yml
+          commit: ${{ env.GITHUB_SHA }}
+          name: nupkg
+          path: nupkg
+          check_artifacts: true
+
+      - name: Push to GitHub Feed
+        run: dotnet nuget push ./nupkg/*.nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
+      - name: Push to NuGet Feed
+        run: dotnet nuget push ./nupkg/*.nupkg --source ${NUGET_FEED} --skip-duplicate --api-key ${NUGET_TOKEN}
