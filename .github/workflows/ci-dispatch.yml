@@ -13,25 +13,38 @@ on:
         required: false
       dotnet-include-prerelease:
         type: boolean
-        description: Whether to include dotnet prerelease version
+        description: Include dotnet prerelease versions
         default: 'true'
         required: false
+      dotnet-verbosity:
+        type: string
+        description: Verbosity of dotnet commands
+        required: false
+        default: minimal
       configuration:
         description: The configuration to build
         default: Release
         required: false
       public-release:
-        description: Whether to build and version as a public release
+        description: Build and version as a public release
+        type: boolean
         required: false
         default: 'false'
       package:
-        description: Whether to pack and upload as an artifact
+        description: Pack and upload as an artifact
+        type: boolean
+        required: false
+        default: 'false'
+      workflow-print-context:
+        description: Print the github context as a step
+        type: boolean
         required: false
         default: 'false'
 
 jobs:
   print-context:
     runs-on: ubuntu-latest
+    if: github.event.inputs.workflow-print-context == 'true'
     steps:
     - env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -41,8 +54,9 @@ jobs:
     uses: libanvl/uuid/.github/workflows/ci-call.yml@main
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
-      #dotnet-version: $ {{ github.event.inputs.dotnet-version }}
-      dotnet-include-prerelease: ${{ github.events.inputs.dotnet-include-prerelease == 'true' }}
-      #configuration:  ${{ github.events.inputs.configuration }}
-      #public-release: ${{ github.events.inputs.public-release }} == 'true'
-      #package: ${{ github.events.inputs.package }} == 'true'
+      dotnet-version: $ {{ github.event.inputs.dotnet-version }}
+      dotnet-include-prerelease: ${{ github.event.inputs.dotnet-include-prerelease == 'true' }}
+      dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity }}
+      configuration:  ${{ github.event.inputs.configuration }}
+      public-release: ${{ github.event.inputs.public-release == 'true' }}
+      package: ${{ github.event.inputs.package == 'true' }}
