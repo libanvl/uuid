@@ -108,7 +108,7 @@ public class UUIDTests
         var a = UUID.IV();
         var a_string = a.ToString();
 
-        var b = new UUID(Convert.FromHexString(a_string));
+        var b = new UUID(a_string);
         Assert.Equal(a, b);
     }
 
