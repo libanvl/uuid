@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>libanvl.uuid</AssemblyName>
@@ -11,24 +11,8 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Authors>libanvl</Authors>
-    <Product>libanvl.dotnet</Product>
     <Description>Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.</Description>
-    <Copyright>The authors and contributors of the libanvl.uuid project.</Copyright>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/libanvl/uuid</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
-
-  <PropertyGroup Label="PDB">
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\README.md">

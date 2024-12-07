@@ -5,22 +5,26 @@ on:
     types:
       - published
   workflow_dispatch:
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-# GitHub Packages Feed settings
-  GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
-  GITHUB_USER: libanvl
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# Official NuGet Feed settings
-  NUGET_FEED: https://api.nuget.org/v3/index.json
-  NUGET_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
+    inputs:
+      push-github-feed:
+        description: Push to GitHub Feed
+        type: boolean
+        required: false
+        default: true
+      push-nuget-feed:
+        description: Push to NuGet Feed
+        type: boolean
+        required: false
+        default: true
 
 jobs:
   release:
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
+      - name: 🎢 Download artifact
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: dotnet.yml
@@ -28,8 +32,14 @@ jobs:
           name: nupkg
           path: nupkg
           check_artifacts: true
+      - name: 🌐 Push to GitHub Feed
+        if: ${{ github.event.inputs.push-github-feed == 'true' }}
+        run: dotnet nuget push ./nupkg/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --skip-duplicate --api-key $AUTH_TOKEN
+        env:
+          AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🌐 Push to NuGet Feed
+        if: ${{ github.event.inputs.push-nuget-feed == 'true' }}
+        run: dotnet nuget push ./nupkg/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key $AUTH_TOKEN
+        env:
+          AUTH_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
 
-      - name: Push to GitHub Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
-      - name: Push to NuGet Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source ${NUGET_FEED} --skip-duplicate --api-key ${NUGET_TOKEN}

@@ -1,4 +1,4 @@
-name: .NET 6
+name: .NET CI
 
 on:
   push:
@@ -8,66 +8,77 @@ on:
   pull_request:
     branches: [main, release/v*]
   workflow_dispatch:
+    inputs:
+      private-release:
+        description: 'Create a private release'
+        type: boolean
+        required: false
+        default: false
+      draft-public-release:
+        description: 'Create a draft public release'
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: dotnet-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  GITHUB_FEED: https://nuget.pkg.github.com/libanvl/index.json
-  GITHUB_USER: libanvl
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   build-ubuntu:
-    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    uses: ./.github/workflows/ci-call.yml
     with:
       runs-on: ubuntu-latest
-      dotnet-version: 6.0.x
-      dotnet-include-prerelease: true
       package: true
+      upload-coverage: true
   build-windows:
-    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    uses: ./.github/workflows/ci-call.yml
     with:
-      runs-on: ubuntu-latest
-      dotnet-version: 6.0.x
-      dotnet-include-prerelease: true
+      runs-on: windows-latest
   build-macos:
-    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    uses: ./.github/workflows/ci-call.yml
     with:
-      runs-on: ubuntu-latest
-      dotnet-version: 6.0.x
-      dotnet-include-prerelease: true
+      runs-on: macos-latest
 
   private-release:
+    permissions:
+      contents: read
+      packages: write
     needs: build-ubuntu
-    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.private-release == 'true')
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4.1.7
+      - name: 🎢 Download Artifact
+        uses: actions/download-artifact@v4
         with:
           name: nupkg
-      - name: Push to GitHub Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source ${GITHUB_FEED} --skip-duplicate --api-key ${GITHUB_TOKEN}
+          path: ./nupkg
+      - name: 🌐 Push to GitHub Feed
+        run: dotnet nuget push ./nupkg/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --skip-duplicate --api-key $AUTH_TOKEN
+        env:
+          AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   draft-public-release:
+    permissions:
+      contents: write
+      actions: read
     needs: build-ubuntu
-    if: startsWith(github.ref, 'refs/heads/release/v') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: (startsWith(github.ref, 'refs/heads/release/v') && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.draft-public-release == 'true')
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4.1.7
+      - name: 🎢 Download Artifact
+        uses: actions/download-artifact@v4
         with:
           name: nupkg
-      - name: Set Tag Version
+          path: ./nupkg
+      - name: 🏷️ Set Tag Version
         run: echo "TAG_VERSION=$(cat ./nupkg/version.txt)" >> $GITHUB_ENV
-      - name: Draft Release
-        uses: softprops/action-gh-release@v0.1.13
+      - name: 📋 Draft Release
+        uses: softprops/action-gh-release@v2
         with:
-          files: ./nupkg/*.nupkg
+          files: ./nupkg/**/*.*
           draft: true
           target_commitish: ${{ env.GITHUB_REF }}
           tag_name: v${{ env.TAG_VERSION }}
           fail_on_unmatched_files: true
+          generate_release_notes: true

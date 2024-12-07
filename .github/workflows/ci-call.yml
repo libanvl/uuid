@@ -1,4 +1,4 @@
-name: .NET CI
+name: Workflow Base
 
 on:
   workflow_call:
@@ -7,16 +7,6 @@ on:
         description: The OS to run on
         type: string
         default: ubuntu-latest
-        required: false
-      dotnet-version:
-        description: The dotnet version specifier
-        type: string
-        default: 6.0.x
-        required: false
-      dotnet-include-prerelease:
-        description: Whether to include dotnet prerelease version
-        type: boolean
-        default: true
         required: false
       dotnet-verbosity:
         description: The log verbosity of dotnet commands
@@ -33,9 +23,16 @@ on:
         type: boolean
         default: false
         required: false
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      upload-coverage:
+        description: Whether to upload code coverage
+        type: boolean
+        default: false
+        required: false
+      upload-coverage-verbose:
+        description: Whether to enable verbose output for upload-coverage
+        type: boolean
+        default: false
+        required: false
 
 jobs:
   build:
@@ -44,38 +41,50 @@ jobs:
       prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
       tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: 🧺 Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+      - name: 🏭 Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ inputs.dotnet-version }}
-          include-prerelease: ${{ inputs.dotnet-include-prerelease }}
-      - name: Nerdbank.GitVersioning
-        uses: dotnet/nbgv@v0.4.0
+          global-json-file: ./global.json
+        env:
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      - name: 🔢 Nerdbank.GitVersioning
+        uses: dotnet/nbgv@v0.4.2
         with:
           setCommonVars: true
         id: nbgv
-      - name: Restore
+      - name: ⚒️ Restore
         run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} -p:ContinuousIntegrationBuild=true
-      - name: Test
+      - name: ⚒️ Build
+        run: dotnet build --configuration ${{ inputs.configuration }} --no-restore --verbosity ${{ inputs.dotnet-verbosity }} /p:ContinuousIntegrationBuild=true
+      - name: 🧪 Test
+        if: ${{ !inputs.upload-coverage }}
         run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }}
-      - name: Print Public Release
+      - name: 🧪 Test With Coverage
+        if: ${{ inputs.upload-coverage }}
+        run: dotnet test --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      - name: 🗣️ Print Public Release
         if: ${{ inputs.package }}
         run: echo ${{ steps.nbgv.outputs.PublicRelease }}
-      - name: Pack
+      - name: 📦 Pack
         if: ${{ inputs.package }}
         run: dotnet pack --configuration ${{ inputs.configuration }} --no-restore --no-build --verbosity ${{ inputs.dotnet-verbosity }} --output nupkg
-      - name: Write Nuget Version
+      - name: 📦 Write Nuget Version
         if: ${{ inputs.package }}
         run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt
-      - name: Upload Artifact
+      - name: 🌐 Upload Artifact
         if: ${{ inputs.package }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: nupkg
           path: ./nupkg/*
+      - name: 🌐 Upload Code Coverage
+        if: ${{ inputs.upload-coverage }}
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: ${{ inputs.upload-coverage-verbose }} # optional (default = false)

@@ -1,7 +1,3 @@
-[![.NET 8](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml)
-[![CodeQL](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml)
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.uuid?label=libanvl.uuid)](https://www.nuget.org/packages/libanvl.uuid/)
-
 # libanvl.UUID
 
 Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.
@@ -29,7 +25,7 @@ Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and 
 - [X] Copy to new byte[]
 - [X] Property access to all five UUID records
 - [X] No signed ints in the API
-- [X] Enumerable as a sequence of bytes 
+- [X] Enumerable as a sequence of bytes
 - [X] More constructors than you can shake a stick at
 
 ## Examples

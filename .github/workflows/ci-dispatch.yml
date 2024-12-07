@@ -1,4 +1,4 @@
-name: .NET CI Manual
+name: Workflow Manual Dispatch
 
 on:
   workflow_dispatch:
@@ -7,20 +7,11 @@ on:
         description: The OS to run on
         default: ubuntu-latest
         required: false
-      dotnet-version:
-        description: The dotnet version specifier
-        default: 6.0.x
-        required: false
-      dotnet-include-prerelease:
-        type: boolean
-        description: Include dotnet prerelease versions
-        default: 'true'
-        required: false
       dotnet-verbosity:
         type: string
         description: Verbosity of dotnet commands
         required: false
-        default: minimal
+        default: normal
       configuration:
         description: The configuration to build
         default: Release
@@ -29,12 +20,22 @@ on:
         description: Pack and upload as an artifact
         type: boolean
         required: false
-        default: 'false'
+        default: false
       workflow-print-context:
         description: Print the github context as a step
         type: boolean
         required: false
-        default: 'false'
+        default: false
+      upload-coverage:
+        description: Upload code coverage
+        type: boolean
+        required: false
+        default: false
+      upload-coverage-verbose:
+        description: Whether to enable verbose output for upload-coverage
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   print-context:
@@ -45,11 +46,11 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
   call-ci:
-    uses: libanvl/uuid/.github/workflows/ci-call.yml@main
+    uses: ./.github/workflows/ci-call.yml
     with:
       runs-on: ${{ github.event.inputs.runs-on }}
-      dotnet-version: ${{ github.event.inputs.dotnet-version }}
-      dotnet-include-prerelease: ${{ github.event.inputs.dotnet-include-prerelease == 'true' }}
       dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity }}
       configuration:  ${{ github.event.inputs.configuration }}
       package: ${{ github.event.inputs.package == 'true' }}
+      upload-coverage: ${{ github.event.inputs.upload-coverage == 'true' }}
+      upload-coverage-verbose: ${{ github.event.inputs.upload-coverage-verbose == 'true' }}

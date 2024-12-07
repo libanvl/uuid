@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">D:\.nuget\packages</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">D:\.nuget\packages;C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.11.1</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="D:\.nuget\packages\" />
+    <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)\xunit.runner.visualstudio\2.8.2\build\net6.0\xunit.runner.visualstudio.props" Condition="Exists('$(NuGetPackageRoot)\xunit.runner.visualstudio\2.8.2\build\net6.0\xunit.runner.visualstudio.props')" />
+    <Import Project="$(NuGetPackageRoot)\xunit.core\2.9.2\build\xunit.core.props" Condition="Exists('$(NuGetPackageRoot)\xunit.core\2.9.2\build\xunit.core.props')" />
+    <Import Project="$(NuGetPackageRoot)\nullable\1.3.1\build\Nullable.props" Condition="Exists('$(NuGetPackageRoot)\nullable\1.3.1\build\Nullable.props')" />
+    <Import Project="$(NuGetPackageRoot)\nerdbank.gitversioning\3.6.146\build\Nerdbank.GitVersioning.props" Condition="Exists('$(NuGetPackageRoot)\nerdbank.gitversioning\3.6.146\build\Nerdbank.GitVersioning.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.testplatform.testhost\17.12.0\build\netcoreapp3.1\Microsoft.TestPlatform.TestHost.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.testplatform.testhost\17.12.0\build\netcoreapp3.1\Microsoft.TestPlatform.TestHost.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.sourcelink.common\1.0.0\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.sourcelink.common\1.0.0\build\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.build.tasks.git\1.0.0\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.build.tasks.git\1.0.0\build\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.sourcelink.github\1.0.0\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.sourcelink.github\1.0.0\build\Microsoft.SourceLink.GitHub.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.codecoverage\17.12.0\build\netstandard2.0\Microsoft.CodeCoverage.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.codecoverage\17.12.0\build\netstandard2.0\Microsoft.CodeCoverage.props')" />
+    <Import Project="$(NuGetPackageRoot)\microsoft.net.test.sdk\17.12.0\build\netcoreapp3.1\Microsoft.NET.Test.Sdk.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.net.test.sdk\17.12.0\build\netcoreapp3.1\Microsoft.NET.Test.Sdk.props')" />
+    <Import Project="$(NuGetPackageRoot)\coverlet.msbuild\6.0.2\build\coverlet.msbuild.props" Condition="Exists('$(NuGetPackageRoot)\coverlet.msbuild\6.0.2\build\coverlet.msbuild.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Pkgxunit_runner_visualstudio Condition=" '$(Pkgxunit_runner_visualstudio)' == '' ">D:\.nuget\packages\xunit.runner.visualstudio\2.8.2</Pkgxunit_runner_visualstudio>
+    <Pkgxunit_analyzers Condition=" '$(Pkgxunit_analyzers)' == '' ">D:\.nuget\packages\xunit.analyzers\1.17.0</Pkgxunit_analyzers>
+    <Pkgxunit Condition=" '$(Pkgxunit)' == '' ">D:\.nuget\packages\xunit\2.9.2</Pkgxunit>
+    <PkgNullable Condition=" '$(PkgNullable)' == '' ">D:\.nuget\packages\nullable\1.3.1</PkgNullable>
+    <PkgNerdbank_GitVersioning Condition=" '$(PkgNerdbank_GitVersioning)' == '' ">D:\.nuget\packages\nerdbank.gitversioning\3.6.146</PkgNerdbank_GitVersioning>
+    <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">D:\.nuget\packages\microsoft.sourcelink.common\1.0.0</PkgMicrosoft_SourceLink_Common>
+    <PkgMicrosoft_Build_Tasks_Git Condition=" '$(PkgMicrosoft_Build_Tasks_Git)' == '' ">D:\.nuget\packages\microsoft.build.tasks.git\1.0.0</PkgMicrosoft_Build_Tasks_Git>
+    <PkgMicrosoft_SourceLink_GitHub Condition=" '$(PkgMicrosoft_SourceLink_GitHub)' == '' ">D:\.nuget\packages\microsoft.sourcelink.github\1.0.0</PkgMicrosoft_SourceLink_GitHub>
+    <PkgMicrosoft_NET_Test_Sdk Condition=" '$(PkgMicrosoft_NET_Test_Sdk)' == '' ">D:\.nuget\packages\microsoft.net.test.sdk\17.12.0</PkgMicrosoft_NET_Test_Sdk>
+    <PkgDotNetAnalyzers_DocumentationAnalyzers_Unstable Condition=" '$(PkgDotNetAnalyzers_DocumentationAnalyzers_Unstable)' == '' ">D:\.nuget\packages\dotnetanalyzers.documentationanalyzers.unstable\1.0.0.59</PkgDotNetAnalyzers_DocumentationAnalyzers_Unstable>
+    <PkgDotNetAnalyzers_DocumentationAnalyzers Condition=" '$(PkgDotNetAnalyzers_DocumentationAnalyzers)' == '' ">D:\.nuget\packages\dotnetanalyzers.documentationanalyzers\1.0.0-beta.59</PkgDotNetAnalyzers_DocumentationAnalyzers>
+    <PkgCSharpIsNullAnalyzer Condition=" '$(PkgCSharpIsNullAnalyzer)' == '' ">D:\.nuget\packages\csharpisnullanalyzer\0.1.593</PkgCSharpIsNullAnalyzer>
+    <Pkgcoverlet_msbuild Condition=" '$(Pkgcoverlet_msbuild)' == '' ">D:\.nuget\packages\coverlet.msbuild\6.0.2</Pkgcoverlet_msbuild>
+    <Pkgcoverlet_collector Condition=" '$(Pkgcoverlet_collector)' == '' ">D:\.nuget\packages\coverlet.collector\6.0.2</Pkgcoverlet_collector>
+  </PropertyGroup>
+</Project>
