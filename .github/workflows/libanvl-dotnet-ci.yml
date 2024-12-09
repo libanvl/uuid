@@ -169,6 +169,11 @@ jobs:
       actions: read
     if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false') }}
     steps:
+      - name: 🎢 Download Package Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg
       - name: 📋 Create Draft Release
         uses: softprops/action-gh-release@v2
         with:
