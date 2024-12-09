@@ -85,10 +85,10 @@ jobs:
       
       - name: ⚒️ Build
         run: |
-            dotnet build `
-            --configuration $env:CONFIGURATION `
-            --no-restore `
-            --verbosity $env:VERBOSITY `
+          dotnet build `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --verbosity $env:VERBOSITY `
           /p:ContinuousIntegrationBuild=true
       
       - name: 🧪 Test
@@ -147,10 +147,11 @@ jobs:
   push-to-github:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ 
-      github.event_name != 'pull_request' &&  
-      github.event.inputs.push-to-github != 'false' 
-    }}
+    if: |
+      ${{ 
+        github.event_name != 'pull_request' &&  
+        github.event.inputs.push-to-github != 'false' 
+      }}
     steps:
       - name: Download Package Artifact
         uses: actions/download-artifact@v4
@@ -170,10 +171,11 @@ jobs:
     permissions:
       contents: write
       actions: read
-    if: ${{
+    if: |
+      ${{
        (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || 
        (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false')
-    }}
+      }}
     steps:
       - name: 📋 Create Draft Release
         uses: softprops/action-gh-release@v2
