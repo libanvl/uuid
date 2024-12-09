@@ -186,7 +186,7 @@ jobs:
       - name: 📋 Create Draft Release
         uses: softprops/action-gh-release@v2
         with:
-          target_commitish: ${{ env.GITHUB_REF }}
+          target_commitish: ${{ github.ref_name }}
           tag_name: ${{ needs.build.outputs.tag-name }}
           files: ./nupkg/*
           draft: true
