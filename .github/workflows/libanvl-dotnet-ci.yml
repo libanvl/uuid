@@ -50,6 +50,9 @@ jobs:
             coverage: false
             pack:     false
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     outputs:
       prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
       tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
