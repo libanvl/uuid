@@ -3,11 +3,11 @@ name: LibAnvl .NET CI
 on:
   push:
     branches:
-      - main
+      - $default-branch
       - release/*
   pull_request:
     branches:
-      - main
+      - $default-branch
       - release/*
   workflow_dispatch:
     inputs:
@@ -20,14 +20,23 @@ on:
           - Release
       dotnet-verbosity:
         description: Verbosity for dotnet
+        type: choice
         required: false
+        options:
+          - quiet
+          - minimal
+          - normal
+          - detailed
+          - diagnostic
         default: 'normal'
       push-to-github:
         description: Push to GitHub package feed
+        type: boolean
         required: true
         default: true
       prepare-draft-release:
         description: Prepare draft release
+        type: boolean
         required: true
         default: true
 
@@ -155,7 +164,7 @@ jobs:
           name: nupkg
           path: ./nupkg
       - name: 📦 Push Package to GitHub
-        uses: libanvl/github/actions/push-to-nuget@main
+        uses: libanvl/ci/.github/actions/push-to-nuget-feed@main
         with:
           nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
           nuget-source: 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json'
@@ -169,10 +178,15 @@ jobs:
       actions: read
     if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false') }}
     steps:
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg
       - name: 📋 Create Draft Release
         uses: softprops/action-gh-release@v2
         with:
-          target_commitish: ${{ env.GITHUB_REF }}
+          target_commitish: ${{ github.ref_name }}
           tag_name: ${{ needs.build.outputs.tag-name }}
           files: ./nupkg/*
           draft: true
