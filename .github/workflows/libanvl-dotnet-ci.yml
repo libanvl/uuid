@@ -3,11 +3,11 @@ name: LibAnvl .NET CI
 on:
   push:
     branches:
-      - "main"
+      - $default-branch
       - release/*
   pull_request:
     branches:
-      - "main"
+      - $default-branch
       - release/*
   workflow_dispatch:
     inputs:
@@ -52,7 +52,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: bash
+        shell: pwsh
     outputs:
       prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
       tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
@@ -85,30 +85,30 @@ jobs:
       
       - name: ⚒️ Build
         run: |
-          dotnet build \
-          --configuration $CONFIGURATION \
-          --no-restore \
-          --verbosity $VERBOSITY \
+            dotnet build `
+            --configuration $env:CONFIGURATION `
+            --no-restore `
+            --verbosity $env:VERBOSITY `
           /p:ContinuousIntegrationBuild=true
       
       - name: 🧪 Test
         if: ${{ !matrix.coverage }}
         run: |
-          dotnet test \
-          --configuration $CONFIGURATION \
-          --no-restore \
-          --no-build \
-          --verbosity $VERBOSITY
+          dotnet test `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY
       
       - name: 🧪 Test With Coverage
         if: ${{ matrix.coverage }}
         run: |
-          dotnet test \
-          --configuration $CONFIGURATION \
-          --no-restore \
-          --no-build \
-          --verbosity $VERBOSITY \
-          /p:CollectCoverage=true \
+          dotnet test `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY `
+          /p:CollectCoverage=true `
           /p:CoverletOutputFormat=opencover
       
       - name: 💬 Print Public Release
@@ -118,11 +118,11 @@ jobs:
       - name: 📦 Pack
         if: ${{ matrix.pack }}
         run: |
-          dotnet pack \
-          --configuration $CONFIGURATION \
-          --no-restore \
-          --no-build \
-          --verbosity $VERBOSITY \
+          dotnet pack `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY `
           --output nupkg
       
       - name: 📦 Write Nuget Version
@@ -147,7 +147,10 @@ jobs:
   push-to-github:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' &&  github.event.inputs.push-to-github != 'false' }}
+    if: ${{ 
+      github.event_name != 'pull_request' &&  
+      github.event.inputs.push-to-github != 'false' 
+    }}
     steps:
       - name: Download Package Artifact
         uses: actions/download-artifact@v4
@@ -159,7 +162,7 @@ jobs:
         with:
           nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
           nuget-source: 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json'
-          package-patch: ./nupkg/*.nupkg
+          package-path: ./nupkg/*.nupkg
 
   draft-release:
     needs: build
@@ -167,7 +170,10 @@ jobs:
     permissions:
       contents: write
       actions: read
-    if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false') }}
+    if: ${{
+       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || 
+       (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false')
+    }}
     steps:
       - name: 📋 Create Draft Release
         uses: softprops/action-gh-release@v2
