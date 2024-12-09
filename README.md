@@ -1,6 +1,6 @@
-[![.NET 8](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml)
+[![LibAnvl .NET CI](https://github.com/libanvl/uuid/actions/workflows/libanvl-dotnet-ci.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/libanvl-dotnet-ci.yml)
 [![CodeQL](https://github.com/libanvl/uuid/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/github-code-scanning/codeql)
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.uuid?label=libanvl.uuid)](https://www.nuget.org/packages/libanvl.uuid/)
+[![NuGet (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.uuid?label=libanvl.uuid)](https://www.nuget.org/packages/libanvl.uuid/)
 
 # libanvl.UUID
 
