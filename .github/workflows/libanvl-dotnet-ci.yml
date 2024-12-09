@@ -3,11 +3,11 @@ name: LibAnvl .NET CI
 on:
   push:
     branches:
-      - $default-branch
+      - main
       - release/*
   pull_request:
     branches:
-      - $default-branch
+      - main
       - release/*
   workflow_dispatch:
     inputs:
