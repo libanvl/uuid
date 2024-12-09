@@ -25,7 +25,7 @@ jobs:
     uses: libanvl/ci/.github/workflows/release-to-nuget.yml@main
     if: ${{ github.event_name == 'release' }}
     with:
-      release-id: ${{ github.event.id }}
+      release-id: ${{ github.event.release.id }}
       push-github-feed: true
       push-nuget-feed: true
 
