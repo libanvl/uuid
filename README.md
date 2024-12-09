@@ -1,5 +1,5 @@
 [![.NET 8](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/dotnet.yml)
-[![CodeQL](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/codeql-analysis.yml)
+[![CodeQL](https://github.com/libanvl/uuid/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/libanvl/uuid/actions/workflows/github-code-scanning/codeql)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/libanvl.uuid?label=libanvl.uuid)](https://www.nuget.org/packages/libanvl.uuid/)
 
 # libanvl.UUID
