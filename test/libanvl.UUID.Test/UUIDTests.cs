@@ -1,4 +1,3 @@
-using System;
 using Xunit;
 
 namespace libanvl.Test;
@@ -6,7 +5,7 @@ namespace libanvl.Test;
 public class UUIDTests
 {
     public static readonly Guid TerminalNamespace = new("2BDE4A90-D05F-401C-9492-E40884EAD1D8");
-    public static readonly Guid UbuntuExpected    = new("2C4DE342-38B7-51CF-B940-2309A097F518");
+    public static readonly Guid UbuntuExpected = new("2C4DE342-38B7-51CF-B940-2309A097F518");
 
     [Fact]
     public void UUID_V_Ubuntu_Profile()
@@ -102,6 +101,7 @@ public class UUIDTests
         Assert.Equal(16, a.ToByteArray().Length);
     }
 
+#if NET
     [Fact]
     public void Can_String_And_Back()
     {
@@ -111,6 +111,7 @@ public class UUIDTests
         var b = new UUID(a_string!);
         Assert.Equal(a, b);
     }
+#endif
 
     [Fact]
     public void LargerMemory_DoesNotThrow()
@@ -124,5 +125,50 @@ public class UUIDTests
     {
         var a = new ReadOnlyMemory<byte>(new byte[15]);
         Assert.Throws<ArgumentException>(() => new UUID(a));
+    }
+
+    [Fact]
+    public void UUID_VII_Has_Correct_Version()
+    {
+        var uuid = UUID.VII();
+        Assert.Equal(0x70, uuid.ToByteArray()[6] & 0xF0);
+    }
+
+    [Fact]
+    public void UUID_VII_Has_Correct_Variant()
+    {
+        var uuid = UUID.VII();
+        Assert.Equal(0x80, uuid.ToByteArray()[8] & 0xC0);
+    }
+
+    [Fact]
+    public void UUID_VII_Has_Random_Bytes()
+    {
+        var uuid1 = UUID.VII();
+        var uuid2 = UUID.VII();
+        Assert.NotEqual(uuid1.ToByteArray().AsSpan(6, 10).ToArray(), uuid2.ToByteArray().AsSpan(6, 10).ToArray());
+    }
+
+    [Fact]
+    public void UUID_VIII_Has_Correct_Version()
+    {
+        var customData = new byte[16];
+        var uuid = UUID.VIII(customData);
+        Assert.Equal(0x80, uuid.ToByteArray()[6] & 0xF0);
+    }
+
+    [Fact]
+    public void UUID_VIII_Has_Correct_Variant()
+    {
+        var customData = new byte[16];
+        var uuid = UUID.VIII(customData);
+        Assert.Equal(0x80, uuid.ToByteArray()[8] & 0xC0);
+    }
+
+    [Fact]
+    public void UUID_VIII_Throws_On_Invalid_Length()
+    {
+        var customData = new byte[15];
+        Assert.Throws<ArgumentException>(() => UUID.VIII(customData));
     }
 }

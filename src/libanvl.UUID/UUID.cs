@@ -36,9 +36,59 @@ public readonly struct UUID : IEquatable<UUID>
     public static readonly Range Data4_Range = new(8, 10);
 
     /// <summary>
-    /// The range of byted for the fifth record.
+    /// The range of bytes for the fifth record.
     /// </summary>
     public static readonly Range Data5_Range = new(10, 16);
+
+    /// <summary>
+    /// Known UUID namespaces.
+    /// </summary>
+    public static class KnownNamespaces
+    {
+        /// <summary>
+        /// The DNS namespace. The name is a fully-qualified domain name.
+        /// </summary>
+        public static readonly UUID DNS = new(
+            0x6ba7b810,
+            0x9dad,
+            0x11d1,
+            new byte[] { 0x80, 0xb4 },
+            new byte[] { 0x00, 0xc0, 0x4f },
+            isLittleEndian: false);
+
+        /// <summary>
+        /// The URL namespace. The name is a URL.
+        /// </summary>
+        public static readonly UUID URL = new(
+            0x6ba7b811,
+            0x9dad,
+            0x11d1,
+            new byte[] { 0x80, 0xb4 },
+            new byte[] { 0x00, 0xc0, 0x4f },
+            isLittleEndian: false);
+
+        /// <summary>
+        /// The ISO Object ID namespace. The name is an ISO OID.
+        /// </summary>
+        public static readonly UUID OID = new(
+            0x6ba7b812,
+            0x9dad,
+            0x11d1,
+            new byte[] { 0x80, 0xb4 },
+            new byte[] { 0x00, 0xc0, 0x4f },
+            isLittleEndian: false);
+
+        /// <summary>
+        /// The X.500 namespace. The name is an X.500 DN.
+        /// </summary>
+        public static readonly UUID X500 = new(
+            0x6ba7b814,
+            0x9dad,
+            0x11d1,
+            new byte[] { 0x80, 0xb4 },
+            new byte[] { 0x00, 0xc0, 0x4f },
+            isLittleEndian: false);
+    }
 
     /// <summary>
     /// Initializes an instance of the Nil <see cref="UUID"/>.
@@ -129,7 +179,9 @@ public readonly struct UUID : IEquatable<UUID>
     /// Assumes the <paramref name="guid"/> has platform byte order.
     /// </summary>
     /// <remarks>
-    /// <paramref name="guid"/> data is first copied to a new array.
+    /// <para>
+    ///     <paramref name="guid"/> data is first copied to a new array.
+    /// </para>
     /// </remarks>
     /// <param name="guid"></param>
     /// <exception cref="ArgumentException"></exception>
@@ -138,6 +190,7 @@ public readonly struct UUID : IEquatable<UUID>
     {
     }
 
+#if NET
     /// <summary>
     /// Initialized an instance of <see cref="UUID"/>.
     /// </summary>
@@ -147,6 +200,7 @@ public readonly struct UUID : IEquatable<UUID>
         : this(Convert.FromHexString(hexString))
     {
     }
+#endif
 
     /// <summary>
     /// Copies the <paramref name="source"/>, optionally swapping the endianess.
@@ -177,6 +231,11 @@ public readonly struct UUID : IEquatable<UUID>
     /// Implicit conversion to <see cref="Guid"/>. The resulting <see cref="Guid"/> will
     /// have platform byte order.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     For netstandard2.0, an additional allocation is made to copy the data to a new array.
+    /// </para>
+    /// </remarks>
     /// <param name="uuid"></param>
     public static implicit operator Guid(UUID uuid)
     {
@@ -185,7 +244,11 @@ public readonly struct UUID : IEquatable<UUID>
             uuid = uuid.EndianSwap();
         }
 
+#if NET
         return new Guid(uuid._data[UUID_Range].Span);
+#else
+        return new Guid(uuid._data[UUID_Range].ToArray());
+#endif
     }
 
     /// <summary>
@@ -212,8 +275,86 @@ public readonly struct UUID : IEquatable<UUID>
     public static UUID Nil => new();
 
     /// <summary>
+    /// Creates a new instance of the Max <see cref="UUID"/>, per RFC 9562.
+    /// </summary>
+    public static UUID Max => new(
+        0xFFFFFFFF,
+        0xFFFF,
+        0xFFFF,
+        new byte[] { 0xFF, 0xFF },
+        new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF });
+
+    /// <summary>
+    /// Creates a new instance of Version 8 <see cref="UUID"/> with custom data.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Per the draft RFC, Version 8 UUIDs are generated using custom data.
+    /// </para>
+    /// </remarks>
+    /// <param name="customData">The custom data to include in the UUID. Must be 16 bytes.</param>
+    /// <exception cref="ArgumentException"></exception>
+    public static UUID VIII(ReadOnlySpan<byte> customData)
+    {
+        if (customData.Length != 16)
+        {
+            throw new ArgumentException($"{nameof(customData)} must have Length of 16", nameof(customData));
+        }
+
+        var result = customData.ToArray();
+
+        // Set the version to 8
+        result[6] = (byte)((result[6] & 0x0F) | 0x80);
+
+        // Set the variant to RFC 4122
+        result[8] = (byte)((result[8] & 0x3F) | 0x80);
+
+        return new UUID(result, BitConverter.IsLittleEndian);
+    }
+
+    /// <summary>
+    /// Creates a new instance of Version 7 <see cref="UUID"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Per RFC 9562, Version 7 UUIDs are generated using a timestamp based on Unix time.
+    /// </para>
+    /// </remarks>
+    public static UUID VII()
+    {
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var randomBytes = new byte[10];
+#if NET
+        RandomNumberGenerator.Fill(randomBytes);
+#else
+        RandomNumberGenerator.Create().GetBytes(randomBytes);
+#endif
+        var result = new byte[16];
+        Array.Copy(BitConverter.GetBytes(timestamp), 0, result, 0, 6);
+        Array.Copy(randomBytes, 0, result, 6, 10);
+
+        // Set the version to 7
+        result[6] = (byte)((result[6] & 0x0F) | 0x70);
+
+        // Set the variant to RFC 4122
+        result[8] = (byte)((result[8] & 0x3F) | 0x80);
+
+        return new UUID(result, BitConverter.IsLittleEndian);
+    }
+
+    /// <summary>
     /// Creates a new instance of Version V(5) <see cref="UUID"/>.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Per RFC 4122, Section 4.3:
+    /// Version 5 UUIDs are generated using a SHA-1 hash of a namespace <see cref="UUID"/> and a name.
+    ///     * The UUIDs generated at different times from the same name in the same namespace MUST be equal.
+    ///     * The UUIDs generated from two different names in the same namespace should be different(with very high probability).
+    ///     * The UUIDs generated from the same name in two different namespaces should be different with(very high probability).
+    ///     * If two UUIDs that were generated from names are equal, then they were generated from the same name in the same namespace (with very high probability).
+    /// </para>
+    /// </remarks>
     /// <param name="namespace">The namespace <see cref="UUID"/></param>
     /// <param name="name">The name</param>
     public static UUID V(UUID @namespace, string name)
@@ -229,7 +370,7 @@ public readonly struct UUID : IEquatable<UUID>
             .Concat(Encoding.Unicode.GetBytes(name))
             .ToArray();
 
-        byte[] hash = SHA1.HashData(namespacedName);
+        byte[] hash = GetHashData(namespacedName);
         byte[] result = new byte[16];
 
         //Copy first 16-bytes of the hash into our future Guid result
@@ -249,6 +390,11 @@ public readonly struct UUID : IEquatable<UUID>
     /// <summary>
     /// Creates a new instance of a Version IV(4) <see cref="UUID"/>.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Per RFC 4122, Section 4.4: Version 4 UUIDs are pseudo-random.
+    /// </para>
+    /// </remarks>
     public static UUID IV()
     {
         byte[] result = Guid.NewGuid().ToByteArray();
@@ -264,20 +410,55 @@ public readonly struct UUID : IEquatable<UUID>
         return new UUID(result);
     }
 
+    private static byte[] GetHashData(byte[] bytes)
+    {
+#if NET
+        return SHA1.HashData(bytes);
+#else
+        using var sha1 = SHA1.Create();
+        return sha1.ComputeHash(bytes);
+#endif
+    }
+
+    private static string GetHexString(ReadOnlyMemory<byte> data)
+    {
+#if NET
+        return Convert.ToHexString(data.ToArray()).ToLowerInvariant();
+#else
+        return BitConverter.ToString(data.ToArray()).Replace("-", "").ToLowerInvariant();
+#endif
+    }
+
     /// <summary>
     /// The first record. Also called 'time_low'.
     /// </summary>
-    public UInt32 Data1 => BitConverter.ToUInt32(_data[Data1_Range].Span);
+    public UInt32 Data1 =>
+#if NET
+        BitConverter.ToUInt32(_data[Data1_Range].Span);
+#else
+
+        BitConverter.ToUInt32(_data[Data1_Range].ToArray(), 0);
+#endif
 
     /// <summary>
     /// The second record. Also called 'time_mid'.
     /// </summary>
-    public UInt16 Data2 => BitConverter.ToUInt16(_data[Data2_Range].Span);
+    public UInt16 Data2 =>
+#if NET
+        BitConverter.ToUInt16(_data[Data2_Range].Span);
+#else
+        BitConverter.ToUInt16(_data[Data2_Range].ToArray(), 0);
+#endif
 
     /// <summary>
     /// The third record. Also called 'time_hi_and_version'.
     /// </summary>
-    public UInt16 Data3 => BitConverter.ToUInt16(_data[Data3_Range].Span);
+    public UInt16 Data3 =>
+#if NET
+        BitConverter.ToUInt16(_data[Data3_Range].Span);
+#else
+        BitConverter.ToUInt16(_data[Data3_Range].ToArray(), 0);
+#endif
 
     /// <summary>
     /// The fourth record. Also called 'clock_seq_hi_and_res_clock_seq_low'.
@@ -299,6 +480,11 @@ public readonly struct UUID : IEquatable<UUID>
     /// Gets a value indicating whether the stored data has little endian byte order.
     /// </summary>
     public bool IsLittleEndian { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the stored data has big endian byte order.
+    /// </summary>
+    public bool IsNetworkByteOrder => !IsLittleEndian;
 
     /// <summary>
     /// Gets a value indicating whether the stored data has platform byte order.
@@ -329,10 +515,15 @@ public readonly struct UUID : IEquatable<UUID>
     }
 
     /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(_data[UUID_Range].ToArray(), IsLittleEndian);
+    public override int GetHashCode() =>
+#if NET
+        HashCode.Combine(_data[UUID_Range], IsLittleEndian);
+#else
+        _data[UUID_Range].GetHashCode() ^ IsLittleEndian.GetHashCode();
+#endif
 
     /// <inheritdoc />
-    public override string? ToString() => Convert.ToHexString(_data.ToArray()).ToLowerInvariant();
+    public override string? ToString() => GetHexString(_data);
 
     private string GetDebuggerDisplay() => $"{_data}, IsLittleEndian={IsLittleEndian}";
 }
