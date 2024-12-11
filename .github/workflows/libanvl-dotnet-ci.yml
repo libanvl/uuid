@@ -45,7 +45,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  ci:
     uses: libanvl/ci/.github/workflows/dotnet-ci.yml@main
     with:
       configuration: ${{ github.event.inputs.configuration || 'Release' }}

@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish-docs:
+  docs:
     uses: libanvl/ci/.github/workflows/dotnet-docfx.yml@main
     with:
       environment: 'github-pages'
