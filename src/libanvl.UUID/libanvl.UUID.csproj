@@ -11,13 +11,23 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Description>Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.</Description>
+    <Description>Immutable, endian-aware UUID library for .NET. Generates Version IV (4),  Version V (5) and Version VIII (8) UUIDs.
+Compatible with .NET Guid.</Description>
+    <Title>libanvl UUID</Title>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/libanvl/uuid</RepositoryUrl>
+    <PackageTags>UUID; Guid</PackageTags>
+    <PackageIcon>vortex.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\README.md">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\vortex.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
