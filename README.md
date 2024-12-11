@@ -8,6 +8,7 @@ Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and 
 
 ## Requirements
 
+[.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
 [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ## Releases
@@ -21,8 +22,10 @@ Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and 
 
 - [X] Immutable
 - [X] Endian-aware
-- [X] Generates Version V (5) Namespaced UUIDs
 - [X] Generates Version IV (4) "Random" UUIDs
+- [X] Generates Version V (5) Namespaced UUIDs
+- [X] Generates Version VII (7) "Unix Timestamp" UUIDs
+- [X] Generates Version VIII (8) "Custom" UUIDs
 - [X] Implicit conversion to and from System.Guid
   - [X] Conversion to System.Guid always follows platform endianess
 - [X] Implicit conversion from byte[] and ReadOnlyMemory&lt;byte&gt;
