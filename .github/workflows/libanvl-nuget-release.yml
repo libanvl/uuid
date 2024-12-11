@@ -8,6 +8,7 @@ on:
     inputs:
       release-id:
         description: Release ID
+        type: string
         required: true
       skip-github-feed:
         description: Do not push to GitHub Feed

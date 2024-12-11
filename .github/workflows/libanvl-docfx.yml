@@ -5,51 +5,13 @@ on:
     branches:
     - main
 
-permissions:
-  actions: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
   publish-docs:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-    
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        global-json-file: ./global.json
-      env:
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    
-    - name: Nerdbank.GitVersioning
-      uses: dotnet/nbgv@v0.4.2
-      with:
-        setCommonVars: true
-      id: nbgv
-    
-    - name: Install Tools
-      run: dotnet tool restore
-    
-    - name: 📚 Generate documentation
-      run: dotnet docfx docfx/docfx.json
-    
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: docfx/_site
-    
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+    uses: libanvl/ci/.github/workflows/dotnet-docfx.yml@main
+    with:
+      environment: 'github-pages'
+    secrets: inherit
