@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <RepoRootPath>$(MSBuildThisFileDirectory)out\</RepoRootPath>
+    <BaseOutputPath>$(RepoRootPath)bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(RepoRootPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <PackageOutputPath>$(RepoRootPath)pkg\$(Configuration)\</PackageOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <EnableDynamicPlatformResolution>true</EnableDynamicPlatformResolution>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GitVersionBaseDirectory>$(MSBuildThisFileDirectory)</GitVersionBaseDirectory>
+    <PackageProjectUrl>https://github.com/libanvl/uuid</PackageProjectUrl>
+    <Company>[COMPANY]</Company>
+    <Authors>The contributors of the [PROJECT] project.</Authors>
+    <Copyright>© The contributors of the [PROJECT] project. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType Condition=" '$(CI)' != 'true' ">embedded</DebugType>
+    <IncludeSymbols Condition=" '$(DebugType)' != 'embedded' ">true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <PackageReference GeneratePathProperty="true" />
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <!-- Avoid compile error about missing namespace when combining ImplicitUsings with .NET Framework target frameworks. -->
+    <Using Remove="System.Net.Http" Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'" />
+  </ItemGroup>
+
+</Project>
