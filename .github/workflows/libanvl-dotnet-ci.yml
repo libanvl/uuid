@@ -1,0 +1,55 @@
+name: LibAnvl .NET CI
+
+on:
+  push:
+    branches:
+      - "main"
+      - release/*
+  pull_request:
+    branches:
+      - "main"
+      - release/*
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: Configuration to build
+        type: choice
+        required: true
+        options:
+          - Debug
+          - Release
+      dotnet-verbosity:
+        description: Verbosity for dotnet
+        type: choice
+        required: false
+        options:
+          - quiet
+          - minimal
+          - normal
+          - detailed
+          - diagnostic
+        default: 'normal'
+      push-to-github:
+        description: Push to GitHub package feed
+        type: boolean
+        required: true
+        default: true
+      prepare-draft-release:
+        description: Prepare draft release
+        type: boolean
+        required: true
+        default: true
+
+concurrency:
+  group: libanvl-dotnet-ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: libanvl/ci/.github/workflows/dotnet-ci.yml@main
+    with:
+      configuration: ${{ github.event.inputs.configuration || 'Release' }}
+      dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity || 'normal' }}
+      push-to-github: ${{ github.event_name != 'pull_request' && github.event.inputs.push-to-github != 'false' }}
+      prepare-draft-release: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.prepare-draft-release != 'false') }}
+    secrets: inherit
