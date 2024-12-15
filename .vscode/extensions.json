@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "github.vscode-github-actions",
+        "editorconfig.editorconfig",
+        "davidanson.vscode-markdownlint"
+    ]
+}

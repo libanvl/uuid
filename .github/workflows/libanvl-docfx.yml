@@ -1,16 +1,16 @@
-name: 📚 Docs
+name: Docs
 
 on:
   push:
     branches:
-    - main
+    - "main"
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  docs:
+  publish-docs:
     uses: libanvl/ci/.github/workflows/dotnet-docfx.yml@main
     with:
       environment: 'github-pages'

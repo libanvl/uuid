@@ -1,13 +1,13 @@
-name: LibAnvl .NET CI
+name: CI
 
 on:
   push:
     branches:
-      - main
+      - "main"
       - release/*
   pull_request:
     branches:
-      - main
+      - "main"
       - release/*
   workflow_dispatch:
     inputs:
@@ -45,7 +45,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  build:
     uses: libanvl/ci/.github/workflows/dotnet-ci.yml@main
     with:
       configuration: ${{ github.event.inputs.configuration || 'Release' }}
