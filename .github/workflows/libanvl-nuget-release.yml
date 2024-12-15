@@ -1,4 +1,4 @@
-name: LibAnvil NuGet Release
+name: Release
 
 on:
   release:
