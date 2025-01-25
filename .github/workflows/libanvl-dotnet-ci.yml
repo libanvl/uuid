@@ -46,7 +46,7 @@ concurrency:
 
 jobs:
   build:
-    uses: libanvl/ci/.github/workflows/dotnet-ci.yml@@cover-windows
+    uses: libanvl/ci/.github/workflows/dotnet-ci.yml@cover-windows
     with:
       configuration: ${{ github.event.inputs.configuration || 'Release' }}
       dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity || 'normal' }}
