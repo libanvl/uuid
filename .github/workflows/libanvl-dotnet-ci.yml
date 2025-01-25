@@ -42,20 +42,11 @@ on:
 
 concurrency:
   group: libanvl-dotnet-ci-${{ github.head_ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  event_file:
-    name: "Event File for Test Results"
-    runs-on: ubuntu-latest
-    steps:
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: Event File
-        path: ${{ github.event_path }}
   build:
-    uses: libanvl/ci/.github/workflows/dotnet-ci.yml@main
+    uses: libanvl/ci/.github/workflows/dotnet-ci.yml@cover-windows
     with:
       configuration: ${{ github.event.inputs.configuration || 'Release' }}
       dotnet-verbosity: ${{ github.event.inputs.dotnet-verbosity || 'normal' }}
