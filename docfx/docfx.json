@@ -10,7 +10,7 @@
           ]
         }
       ],
-      "dest": "api",
+      "output": "api"
     }
   ],
   "build": {
@@ -34,11 +34,11 @@
     "output": "_site",
     "template": [
       "default",
-      "material/material"
+      "modern"
     ],
     "globalMetadata": {
-      "_appName": "libanvl.uuid",
-      "_appTitle": "libanvl.uuid",
+      "_appName": "[PLACEHOLDER]",
+      "_appTitle": "[PLACEHOLDER]",
       "_enableSearch": true,
       "pdf": false
     }

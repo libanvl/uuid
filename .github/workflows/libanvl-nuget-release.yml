@@ -10,13 +10,13 @@ on:
         description: Release ID
         type: string
         required: true
-      skip-github-feed:
-        description: Do not push to GitHub Feed
+      push-github-feed:
+        description: Push to GitHub Feed
         type: boolean
         required: false
         default: false
-      skip-nuget-feed:
-        description: Do not push to NuGet Feed
+      push-nuget-feed:
+        description: Push to NuGet Feed
         type: boolean
         required: false
         default: false
@@ -29,13 +29,15 @@ jobs:
       release-id: ${{ github.event.release.id }}
       push-github-feed: true
       push-nuget-feed: true
-    secrets: inherit
+    secrets:
+      NUGET_PUSH_KEY: ${{ secrets.NUGET_PUSH_KEY }}
 
   release-to-nuget-manual:
     uses: libanvl/ci/.github/workflows/release-to-nuget.yml@main
     if: ${{ github.event_name == 'workflow_dispatch' }}
     with:
       release-id: ${{ github.event.inputs.release-id }}
-      push-github-feed: ${{ github.event.inputs.skip-github-feed != 'false' }}
-      push-nuget-feed: ${{ github.event.inputs.skip-nuget-feed != 'false' }}
-    secrets: inherit
+      push-github-feed: ${{ github.event.inputs.push-github-feed }}
+      push-nuget-feed: ${{ github.event.inputs.push-nuget-feed }}
+    secrets:
+      NUGET_PUSH_KEY: ${{ secrets.NUGET_PUSH_KEY }}
