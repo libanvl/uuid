@@ -37,8 +37,8 @@
       "modern"
     ],
     "globalMetadata": {
-      "_appName": "[PLACEHOLDER]",
-      "_appTitle": "[PLACEHOLDER]",
+      "_appName": "libanvl.UUID",
+      "_appTitle": "libanvl.UUID",
       "_enableSearch": true,
       "pdf": false
     }

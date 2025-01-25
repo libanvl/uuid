@@ -4,19 +4,30 @@
 
 # libanvl.UUID
 
-Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and Version IV (4) UUIDs.
+libanvl.UUID is an immutable, endian-aware UUID library for .NET. It supports generating Version IV (4), Version V (5), Version VII (7), and Version VIII (8) UUIDs. This library is designed to be highly performant and easy to use, providing seamless integration with .NET applications.
 
 ## Requirements
 
-[.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
-[.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
+- [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)
+
+## Installation
+
+You can install the libanvl.UUID library via NuGet:
+
+dotnet add package libanvl.uuid
+
+For CI builds, you can use the GitHub feed:
+
+dotnet nuget add source --username USERNAME --password TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/libanvl/index.json"
+dotnet add package libanvl.uuid --prerelease
 
 ## Releases
 
-* NuGet packages are available on [NuGet.org](https://www.nuget.org/packages/libanvl.uuid)
-  * Embedded debug symbols
-  * Source Link enabled
-* NuGet packages from CI builds are available on the [libanvl GitHub feed](https://github.com/libanvl/uuid/packages/)
+- NuGet packages are available on [NuGet.org](https://www.nuget.org/packages/libanvl.uuid)
+  - Embedded debug symbols
+  - Source Link enabled
+- NuGet packages from CI builds are available on the [libanvl GitHub feed](https://github.com/libanvl/uuid/packages/)
 
 ## Features
 
@@ -26,25 +37,32 @@ Immutable, endian-aware UUID library for .NET. Also generates Version V (5) and 
 - [X] Generates Version V (5) Namespaced UUIDs
 - [X] Generates Version VII (7) "Unix Timestamp" UUIDs
 - [X] Generates Version VIII (8) "Custom" UUIDs
-- [X] Implicit conversion to and from System.Guid
-  - [X] Conversion to System.Guid always follows platform endianess
-- [X] Implicit conversion from byte[] and ReadOnlyMemory&lt;byte&gt;
-- [X] Copy to new byte[]
+- [X] Implicit conversion to and from `System.Guid`
+  - [X] Conversion to `System.Guid` always follows platform endianess
+- [X] Implicit conversion from `byte[]` and `ReadOnlyMemory<byte>`
+- [X] Copy to new `byte[]`
 - [X] Property access to all five UUID records
 - [X] No signed ints in the API
 - [X] Enumerable as a sequence of bytes 
 - [X] More constructors than you can shake a stick at
 
-## Examples
+## Usage
+
+Here are some examples of how to use the libanvl.UUID library:
+
+### Generate a Namespaced UUID
 
 ```csharp
-
 public Guid GetWindowsTerminalNamespacedProfileGuid(string profileName)
 {
     Guid terminalNamespace = new("2BDE4A90-D05F-401C-9492-E40884EAD1D8");
     return UUID.V(terminalNamespace, profileName);
 }
+```
 
+### Generate a Fragmented Namespaced UUID
+
+```csharp
 public Guid GetWindowsTerminalNamespacedFragmentProfileGuid(string fragmentName, string profileName)
 {
     Guid fragmentNamespace = new("f65ddb7e-706b-4499-8a50-40313caf510a");
@@ -52,7 +70,11 @@ public Guid GetWindowsTerminalNamespacedFragmentProfileGuid(string fragmentName,
     UUID fragmentUUID = UUID.V(fragmentNamespace, fragmentName);
     return UUID.V(fragmentUUID, profileName);
 }
+```
 
+### Convert to Big Endian UUID
+
+```csharp
 public UUID GetBigEndianUUID(UUID value)
 {
     if (value.IsLittleEndian)
