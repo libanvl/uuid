@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="System.Memory" Version="4.6.0" />
-    <PackageVersion Include="Microsoft.Bcl.Memory" Version="9.0.2" />
+    <PackageVersion Include="System.Memory" Version="4.6.2" />
+    <PackageVersion Include="Microsoft.Bcl.Memory" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
