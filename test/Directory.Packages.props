@@ -5,13 +5,13 @@
 
   <ItemGroup>
     <GlobalPackageReference Include="coverlet.msbuild" Version="6.0.4" />
-    <GlobalPackageReference Include="JunitXml.TestLogger" Version="5.0.0" />
-    <GlobalPackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <GlobalPackageReference Include="JunitXml.TestLogger" Version="7.0.2" />
+    <GlobalPackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Include="xunit.v3" Version="1.0.1" />
+    <PackageVersion Include="xunit.v3" Version="3.2.1" />
   </ItemGroup>
 
 </Project>
