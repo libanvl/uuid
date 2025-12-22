@@ -3,13 +3,13 @@
   "isRoot": true,
   "tools": {
     "nbgv": {
-      "version": "3.7.115",
+      "version": "3.9.50",
       "commands": [
         "nbgv"
       ]
     },
     "docfx": {
-      "version": "2.78.3",
+      "version": "2.78.4",
       "commands": [
         "docfx"
       ]
