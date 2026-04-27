@@ -6,7 +6,7 @@
   <ItemGroup>
     <GlobalPackageReference Include="coverlet.msbuild" Version="6.0.4" />
     <GlobalPackageReference Include="JunitXml.TestLogger" Version="5.0.0" />
-    <GlobalPackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <GlobalPackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
     <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 
